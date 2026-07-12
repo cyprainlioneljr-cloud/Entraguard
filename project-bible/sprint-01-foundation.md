@@ -99,21 +99,21 @@ stored in the macOS keychain.
    `Update-MgUser` (no portal control exists for this property) and verified with
    `Get-MgUser`. Script: `/graph-scripts/set-breakglass-password-policy.ps1`.
    Scope used and justified: `User.ReadWrite.All`.
-   (![Never expires](../screenshots/09-bg-password-never-expires.png))
+   (![Never expires](../screenshots/09-bg-password-never-expires.png)
 4. **Passkey registration.** TAP issued per account; sign-in at
    `aka.ms/mysecurityinfo`; security defaults forced standard MFA registration
    first (kept, documented); device-bound passkey added via the Authenticator QR
-   flow. (![BG01 passkey](../screenshots/10-bg01-passkey-registered.png))
+   flow. (![BG01 passkey](../screenshots/10-bg01-passkey-registered.png)
    (![BG02 passkey](../screenshots/10-bg02-passkey-registered.png))
 5. **Live test.** Fresh-session portal sign-in with a passkey ceremony; the
    sign-in log shows `Passkey (device-bound)` · Succeeded · User approved.
-   (![Sign-in detail](../screenshots/11-bg-signin-detail-passkey.png))
+   (![Sign-in detail](../screenshots/11-bg-signin-detail-passkey.png)
 6. **Exclusion group.** `sg-ca-exclude-breakglass`, exactly two members, zero
    owners (ownership on a CA-exclusion group is a privilege-escalation path).
-   (![Group](../screenshots/12-ca-exclusion-group.png))
+   (![Group](../screenshots/12-ca-exclusion-group.png)
 7. **Tenant owner demoted.** The signup account was stripped of Global
    Administrator once three tested doors existed.
-   (![Role removed](../screenshots/13-tenant-owner-role-removed.png))
+   (![Role removed](../screenshots/13-tenant-owner-role-removed.png)
 
 ## Validation
 
