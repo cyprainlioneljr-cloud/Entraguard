@@ -2,6 +2,7 @@
 
 | Filename | Sprint | What it shows |
 |----------|--------|---------------|
+| 01-tenant-created-manage-tenants.png | 1 | Manage tenants view at creation: Default Directory, primary domain, tenant ID |
 | 02-entra-tenant-overview.png | 1 | Tenant overview, org name, tenant ID, primary domain |
 | 03-security-defaults-enabled.png | 1 | Security defaults confirmed enabled (AD-004) |
 | 04-adm-account-created.png | 1 | Tier 0 admin account (adm-provost) creation |
@@ -29,6 +30,3 @@
 | 25-au-delegation-denied.png | 2 | Same admin denied on user outside the AU: the boundary working |
 | 26-au-audit-trail.png | 2 | Audit log: three correlated entries for the allowed reset, attributed to the scoped admin |
 | 27-group-based-licensing.png | 2 | P2 inherited via all 8 dynamic groups, 26/100 assigned |
-
-**Note:** Screenshot 01 was not captured; the tenant-creation path changed twice
-during Sprint 1 (documented in AD-001). Index numbering starts at 02.
