@@ -1,0 +1,25 @@
+UserPrincipalName,DisplayName,GivenName,Surname,JobTitle,Department,EmployeeType,OfficeLocation,UsageLocation
+james.whitfield@meridianfgoutlook.onmicrosoft.com,James Whitfield,James,Whitfield,Chief Executive Officer,Executive,Employee,Dallas HQ,US
+diane.chen@meridianfgoutlook.onmicrosoft.com,Diane Chen,Diane,Chen,Chief Financial Officer,Executive,Employee,Dallas HQ,US
+marcus.reed@meridianfgoutlook.onmicrosoft.com,Marcus Reed,Marcus,Reed,Senior Trader,Trading,Employee,Dallas HQ,US
+priya.sharma@meridianfgoutlook.onmicrosoft.com,Priya Sharma,Priya,Sharma,Trader,Trading,Employee,Dallas HQ,US
+tom.gallagher@meridianfgoutlook.onmicrosoft.com,Tom Gallagher,Tom,Gallagher,Junior Trader,Trading,Employee,Dallas HQ,US
+elena.vasquez@meridianfgoutlook.onmicrosoft.com,Elena Vasquez,Elena,Vasquez,Head of Advisory,Advisory,Employee,Chicago Office,US
+david.okonkwo@meridianfgoutlook.onmicrosoft.com,David Okonkwo,David,Okonkwo,Financial Advisor,Advisory,Employee,Chicago Office,US
+rachel.kim@meridianfgoutlook.onmicrosoft.com,Rachel Kim,Rachel,Kim,Financial Advisor,Advisory,Employee,Chicago Office,US
+michael.torres@meridianfgoutlook.onmicrosoft.com,Michael Torres,Michael,Torres,Chief Risk Officer,Risk and Compliance,Employee,Dallas HQ,US
+amara.johnson@meridianfgoutlook.onmicrosoft.com,Amara Johnson,Amara,Johnson,Compliance Analyst,Risk and Compliance,Employee,Dallas HQ,US
+ben.carter@meridianfgoutlook.onmicrosoft.com,Ben Carter,Ben,Carter,Risk Analyst,Risk and Compliance,Employee,Dallas HQ,US
+linda.park@meridianfgoutlook.onmicrosoft.com,Linda Park,Linda,Park,Controller,Finance,Employee,Dallas HQ,US
+omar.hassan@meridianfgoutlook.onmicrosoft.com,Omar Hassan,Omar,Hassan,Financial Accountant,Finance,Employee,Dallas HQ,US
+grace.liu@meridianfgoutlook.onmicrosoft.com,Grace Liu,Grace,Liu,Accounts Payable Specialist,Finance,Employee,Dallas HQ,US
+nathan.brooks@meridianfgoutlook.onmicrosoft.com,Nathan Brooks,Nathan,Brooks,IT Manager,IT,Employee,Dallas HQ,US
+sofia.reyes@meridianfgoutlook.onmicrosoft.com,Sofia Reyes,Sofia,Reyes,Systems Administrator,IT,Employee,Dallas HQ,US
+kevin.obrien@meridianfgoutlook.onmicrosoft.com,Kevin OBrien,Kevin,OBrien,Helpdesk Technician,IT,Employee,Dallas HQ,US
+aisha.bello@meridianfgoutlook.onmicrosoft.com,Aisha Bello,Aisha,Bello,IT Support Specialist,IT,Employee,Chicago Office,US
+patricia.nguyen@meridianfgoutlook.onmicrosoft.com,Patricia Nguyen,Patricia,Nguyen,HR Director,HR,Employee,Dallas HQ,US
+daniel.foster@meridianfgoutlook.onmicrosoft.com,Daniel Foster,Daniel,Foster,HR Business Partner,HR,Employee,Dallas HQ,US
+monica.alvarez@meridianfgoutlook.onmicrosoft.com,Monica Alvarez,Monica,Alvarez,HR Coordinator,HR,Employee,Chicago Office,US
+robert.stein@meridianfgoutlook.onmicrosoft.com,Robert Stein,Robert,Stein,General Counsel,Legal,Employee,Dallas HQ,US
+yuki.tanaka@meridianfgoutlook.onmicrosoft.com,Yuki Tanaka,Yuki,Tanaka,Legal Counsel,Legal,Employee,Dallas HQ,US
+chloe.dubois@meridianfgoutlook.onmicrosoft.com,Chloe Dubois,Chloe,Dubois,Paralegal,Legal,Employee,Dallas HQ,US
