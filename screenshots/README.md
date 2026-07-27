@@ -43,3 +43,12 @@
 | 36-signin-report-only-useraction-david-passwordonly.png | 3 | David Okonkwo, password-only. CA02 report-only verdict User action required. The enforcement-gap proof. |
 | 36a-david-registration-prompt.png | 3 | David pushed into Authenticator registration during the password-only test. |
 | 37-security-defaults-disabled-confirmed.png | 3 | Tenant Properties confirming Security Defaults Disabled. Personal technical-contact email masked. |
+| `38-admin-approver-created.png` | 4 | The dedicated `admin-approver` account created via portal with 0 roles and 0 group memberships, before P2 and passkey assignment |
+| `39-pim-global-admin-role-settings.png` | 4 | Global Administrator role settings, Activation tab: 2h max duration, Azure MFA, require justification, require approval, with `admin-approver` named as approver |
+| `40-pim-adm-provost-eligible-created.png` | 4 | `adm-provost` under the Eligible assignments tab for Global Administrator |
+| `41-pim-activation-blocked-already-active.png` | 4 | Activation request panel filled in; this attempt failed with "role already active" because standing GA was still held |
+| `42-pim-activation-pending-approver-view.png` | 4 | Signed in as `admin-approver`, pending GA activation request from ADM-Provost visible under Approve requests |
+| `43-pim-approval-decision.png` | 4 | Approval panel with request details (2h window, 14:01 to 16:01) and approver justification entered |
+| `44-pim-activation-active.png` | 4 | Requester side: `adm-provost` GA now Activated with end time 4:12 PM, not Permanent |
+
+
