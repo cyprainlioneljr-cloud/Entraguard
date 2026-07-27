@@ -30,3 +30,16 @@
 | 25-au-delegation-denied.png | 2 | Same admin denied on user outside the AU: the boundary working |
 | 26-au-audit-trail.png | 2 | Audit log: three correlated entries for the allowed reset, attributed to the scoped admin |
 | 27-group-based-licensing.png | 2 | P2 inherited via all 8 dynamic groups, 26/100 assigned |
+| 27-auth-methods-registration-details-before.png | 3 | Pre-enforcement registration baseline. Three accounts MFA-capable, all 25 workforce users Not-Capable. |
+| 27a-auth-methods-policy-before.png | 3 | Authentication methods policy. FIDO2, Authenticator, TAP enabled; SMS and Voice disabled. |
+| 28-ca01-blocklegacyauth-details.png | 3 | CA01 block-legacy-auth policy details, report-only. |
+| 29-ca-policies-inventory.png | 3 | Conditional Access board, four policies, zero Microsoft-managed. |
+| 29b-ca04-renamed-from-ca11.png | 3 | Numbering correction. CA11 renamed to CA04 into the global block. |
+| 30-ca03-registration-target-useraction.png | 3 | CA03 targeting the Register security information user action. |
+| 31-ca03-report-only-created.png | 3 | Full five-policy persona board, all report-only. |
+| 32-named-locations-both-chicago-trusted.png | 3 | Named locations list. Chicago (trusted) and HighRisk-Countries, neither in a policy yet. |
+| 33-named-location-highrisk-countries.png | 3 | High-risk countries location created (interim, before Chicago added). |
+| 35-signin-report-only-verdicts-tom.png | 3 | Tom Gallagher, TAP sign-in. CA02 report-only verdict Success (TAP satisfies MFA). |
+| 36-signin-report-only-useraction-david-passwordonly.png | 3 | David Okonkwo, password-only. CA02 report-only verdict User action required. The enforcement-gap proof. |
+| 36a-david-registration-prompt.png | 3 | David pushed into Authenticator registration during the password-only test. |
+| 37-security-defaults-disabled-confirmed.png | 3 | Tenant Properties confirming Security Defaults Disabled. Personal technical-contact email masked. |
