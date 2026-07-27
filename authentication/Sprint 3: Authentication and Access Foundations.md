@@ -28,7 +28,7 @@ The compliance drivers are concrete. SOX requires access controls and segregatio
 | 3 | Build the Conditional Access persona architecture in report-only | Complete |
 | 4 | Build named locations for trusted and high-risk signals | Complete |
 | 5 | Validate report-only behavior against real sign-in data | Complete |
-| 6 | Execute controlled cutover to enforcement | Gated final step |
+| 6 | Execute controlled cutover to enforcement | final step |
 
 ## Certification Mapping
 
