@@ -1,9 +1,4 @@
-**Project:** EntraGuard, Enterprise Identity Security and Governance Lab
-**Organization:** Meridian Financial Group (fictional, regulated financial services)
-**Status:** In progress (core Entra role JIT flow complete)
-**Certification mapping:** SC-300 (Implement and manage privileged access), AZ-500 (Manage identity and access)
 
----
 
 ## Introduction
 
