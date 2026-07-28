@@ -50,5 +50,13 @@
 | `42-pim-activation-pending-approver-view.png` | 4 | Signed in as `admin-approver`, pending GA activation request from ADM-Provost visible under Approve requests |
 | `43-pim-approval-decision.png` | 4 | Approval panel with request details (2h window, 14:01 to 16:01) and approver justification entered |
 | `44-pim-activation-active.png` | 4 | Requester side: `adm-provost` GA now Activated with end time 4:12 PM, not Permanent |
+| `45-pim-user-admin-role-settings.png` | 4 | User Administrator role settings: 8h max duration, Azure MFA, justification required, no approval (operational tier) |
+| `46-pim-patricia-eligible-created.png` | 4 | Patricia Nguyen under Eligible assignments for User Administrator, after conversion from standing |
+| `47-pim-security-admin-role-settings.png` | 4 | Security Administrator role settings: 4h max duration, Azure MFA, justification required, no approval |
+| `48-pim-azure-owner-external-finding-before.png` | 4 | IAM role assignments showing two standing Owner grants to the dormant external account, plus the Azure elevated-access warning banner (the finding) |
+| `49-pim-azure-owner-external-removed.png` | 4 | IAM after remediation: only adm-provost holds Owner, external account grants removed, privileged count reduced |
+| `50-pim-azure-owner-role-settings.png` | 4 | Azure resource Owner role settings: 4h activation, MFA and justification, time-bound eligibility (1yr max, no permanent) |
+| `51-pim-azure-owner-eligible-created.png` | 4 | adm-provost as eligible Owner with a one-year time-bound eligibility window |
+| `52-pim-alerts-clean.png` | 4 | Entra role PIM alerts blade showing no results after the cutover (clean board as remediation evidence) |
 
 
