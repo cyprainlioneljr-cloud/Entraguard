@@ -58,5 +58,20 @@
 | `50-pim-azure-owner-role-settings.png` | 4 | Azure resource Owner role settings: 4h activation, MFA and justification, time-bound eligibility (1yr max, no permanent) |
 | `51-pim-azure-owner-eligible-created.png` | 4 | adm-provost as eligible Owner with a one-year time-bound eligibility window |
 | `52-pim-alerts-clean.png` | 4 | Entra role PIM alerts blade showing no results after the cutover (clean board as remediation evidence) |
+| `53-app-saml-toolkit-group-created.png` | 5 | Dedicated app-assignment group app-saml-toolkit-users with two test members (David Okonkwo, Tom Gallagher), assigned membership |
+| `54-saml-toolkit-app-added.png` | 5 | Microsoft Entra SAML Toolkit added to the tenant, Application ID and Object ID visible |
+| `55-saml-toolkit-group-assigned.png` | 5 | The assignment group attached to the app under Users and groups (group-based assignment) |
+| `56-saml-basic-configuration.png` | 5 | Committed Basic SAML Configuration: Identifier, Reply URL, Sign on URL all set |
+| `57-saml-claims-reviewed.png` | 5 | Attributes and claims after trimming givenname and surname to least privilege |
+| `58-saml-sso-test-success.png` | 5 | SAML Toolkit greeting the federated user by UPN, confirming successful SSO round trip |
+| `59-saml-toolkit-configuration-view.png` | 5 | Toolkit SP-side SAML configuration page showing matching Entity ID |
+| `60-oidc-app-registration-created.png` | 5 | OIDC app registration overview: single-tenant, web redirect URI, activated |
+| `61-oidc-api-permissions.png` | 5 | API permissions showing only Microsoft Graph User.Read delegated (least privilege) |
+| `62-scim-app-created.png` | 5 | Non-gallery provisioning app, get-started overview with the three configuration tasks |
+| `63-scim-provisioning-mode-automatic.png` | 5 | Provisioning Mode set to Automatic, Admin Credentials section revealed |
+| `64-scim-admin-credentials-fields.png` | 5 | SCIM Connectivity page: Bearer authentication, Tenant URL, Secret Token fields |
+| `65-scim-test-connection-expected-failure.png` | 5 | Test Connection failure (CredentialValidationUnavailable) against a placeholder endpoint, confirming the connection boundary |
+
+
 
 
