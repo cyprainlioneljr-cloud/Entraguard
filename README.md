@@ -8,7 +8,7 @@ Enterprise IAM lab built on Microsoft Entra ID , identity governance, Conditiona
 | 2 | Identity Lifecycle & Structure |  ✅ Complete | — |
 | 3 | Authentication & Access Foundations | ✅ Complete | — |
 | 4 | Privileged Access | ✅ Complete | — |
-| 5 | Federation & App Integration | ⬜ Backlog | — |
+| 5 | Federation & App Integration | ✅  | — |
 | 6 | Identity Governance | ⬜ Backlog | — |
 | 7 | Identity Protection & Monitoring | ⬜ Backlog | — |
 | 8 | Identity Automation | ⬜ Backlog | — |
@@ -89,3 +89,67 @@ external Owner) remediated. Next: Sprint 5 (Federation and App Integration).
 
 P2 trial expires 8/15/2026. Decision checkpoint 8/9/2026. Sprints 5 and 6 lean on
 P2/Governance features; prioritize before the deadline.
+## Architecture Decisions (append)
+
+### AD-011: Dedicated app-assignment group over department group
+**Date:** 2026-07-29
+**Decision:** Create a dedicated group (app-saml-toolkit-users) with assigned
+membership for app access, rather than reusing a Sprint 2 dynamic department group.
+**Rationale:** App access is a deliberate grant that should be governable on its own
+in Sprint 6 (access packages, access reviews), not a side effect of a department
+attribute. Assigned membership keeps the "who approved this access" story clean and
+reviewable.
+
+### AD-012: OIDC app uses no client secret
+**Date:** 2026-07-29
+**Decision:** Register oidc-meridian-webapp with no client secret. Document that
+production would use a certificate or workload identity federation.
+**Rationale:** A client secret is a shared string that can leak, be committed, or be
+stolen. Certificates keep the private key with the app; federated credentials remove
+the stored secret entirely. Client secrets are the weakest option. Stolen app secrets
+are a common breach vector (app authenticates with no user). Choosing the stronger
+model demonstrates security judgment.
+
+### AD-013: SCIM demonstrated to the connection boundary (Path A)
+**Date:** 2026-07-30
+**Decision:** Demonstrate the full Entra-side SCIM provisioning configuration up to the
+connection test, and document mappings/scoping as concepts, rather than standing up a
+live SCIM endpoint.
+**Rationale:** Real SaaS SCIM targets gate the endpoint behind paid enterprise tiers; a
+self-hosted endpoint needs an Azure App Service (possible cost, unsupported .NET sample).
+Test Connection against a reserved .invalid placeholder returned CredentialValidationUnavailable
+as expected, confirming Entra reaches and authenticates to the endpoint. This honestly
+shows the skill and the environment boundary. A live endpoint is a future enhancement.
+
+---
+
+## Lessons Learned (append)
+
+- Gallery apps pre-populate SAML Identifier and Reply URL; custom non-gallery apps do not.
+- NameID format matters: the SAML Toolkit expects emailAddress format. UPN worked only
+  because UPN and email aligned on the .onmicrosoft.com domain. A mismatch fails sign-in.
+- Delegated vs application permissions is a core interview distinction: delegated acts as
+  the signed-in user (bounded); application acts as the app with no user (higher risk).
+- Not creating something can be the stronger security stance (OIDC client secret).
+- SCIM mappings and scoping blades unlock only after a validated live connection.
+
+---
+
+## Applications Registered (append)
+
+- Microsoft Entra SAML Toolkit (gallery, SAML SSO, group-assigned, claims trimmed) - SSO validated
+- oidc-meridian-webapp (App registration, OIDC, single-tenant, User.Read, no secret)
+- scim-meridian-provisioning (non-gallery, SCIM provisioning config to connection boundary)
+
+---
+
+## Current Sprint (update)
+
+Sprint 5 (Federation and App Integration) COMPLETE. Three integrations demonstrated:
+SAML SSO (live federated sign-in proven), OIDC (least-privilege, secure credential
+choice), SCIM (configured to connection boundary, mappings/scoping documented). All on
+P1, no P2 clock consumed. Next: Sprint 6 (Identity Governance), which is P2-dependent.
+
+P2 trial expires 8/15/2026. Decision checkpoint 8/9/2026. Sprint 6 leans on P2/Governance
+(access reviews, entitlement management, lifecycle workflows); prioritize before deadline.
+
