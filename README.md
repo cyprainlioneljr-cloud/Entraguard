@@ -8,7 +8,7 @@ Enterprise IAM lab built on Microsoft Entra ID , identity governance, Conditiona
 | 2 | Identity Lifecycle & Structure |  ✅ Complete | — |
 | 3 | Authentication & Access Foundations | ✅ Complete | — |
 | 4 | Privileged Access | ✅ Complete | — |
-| 5 | Federation & App Integration | ✅  | — |
+| 5 | Federation & App Integration | ✅ Complete | — |
 | 6 | Identity Governance | ⬜ Backlog | — |
 | 7 | Identity Protection & Monitoring | ⬜ Backlog | — |
 | 8 | Identity Automation | ⬜ Backlog | — |
