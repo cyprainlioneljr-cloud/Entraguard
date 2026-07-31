@@ -71,6 +71,38 @@
 | `63-scim-provisioning-mode-automatic.png` | 5 | Provisioning Mode set to Automatic, Admin Credentials section revealed |
 | `64-scim-admin-credentials-fields.png` | 5 | SCIM Connectivity page: Bearer authentication, Tenant URL, Secret Token fields |
 | `65-scim-test-connection-expected-failure.png` | 5 | Test Connection failure (CredentialValidationUnavailable) against a placeholder endpoint, confirming the connection boundary |
+| `66-access-review-scope-app.png` | 6 | Access review scoped to SAML Toolkit app, all users |
+| `67-access-review-reviewer-settings.png` | 6 | Reviewer (adm-provost) and quarterly recurrence |
+| `68-access-review-created.png` | 6 | Review created and listed, not started |
+| `69-access-review-reviewer-decisions.png` | 6 | Reviewer decision UI, Entra recommending Deny (inactive user) for both |
+| `70-access-review-decisions-approved.png` | 6 | Reviewer approved both, overriding the inactive-user recommendation |
+| `71-access-review-results-summary.png` | 6 | Results donut: 2 users, 2 approved, 0 denied |
+| `72-dormant-account-state-before.png` | 6 | Dormant external account, orphaned (0 groups/roles/licenses), still enabled |
+| `73-dormant-account-disabled.png` | 6 | Dormant external account sign-in disabled |
+| `74-entitlement-catalog-resource-added.png` | 6 | app-saml-toolkit-users group onboarded to the catalog |
+| `75-entitlement-catalog-created.png` | 6 | Meridian-App-Access catalog, internal-only |
+| `76-access-package-basics.png` | 6 | Access package basics, in the catalog |
+| `77-access-package-resource-role.png` | 6 | Group added with Member role |
+| `78-access-package-request-policy.png` | 6 | Request policy: internal members, approval + justification required |
+| `79-access-package-created.png` | 6 | Access package created and listed |
+| `80-access-package-policy-approver.png` | 6 | Policy edited to admin-approver as specific approver |
+| `81-myaccess-request-submitted.png` | 6 | Aisha Bello requests the package via My Access |
+| `82-myaccess-approval-pending.png` | 6 | admin-approver sees the pending request (SOD) |
+| `83-access-package-request-approved.png` | 6 | Request approved, recorded to admin-approver |
+| `84-access-package-group-membership.png` | 6 | Aisha auto-added to the group, now 3 members |
+| `85-access-package-assignment-active.png` | 6 | Assignment Delivered, with ~90-day expiration |
+| `86-lifecycle-workflows-401-before-license.png` | 6 | Lifecycle Workflows 401 (Governance license required) |
+| `87-governance-trial-activated.png` | 6 | Entra ID Governance trial activated |
+| `88-licenses-p2-governance-check.png` | 6 | Licenses list (P2 present; Governance provisioning) |
+| `89-powershell-set-leave-dates.png` | 6 | Both users' employeeLeaveDateTime confirmed via raw Graph GET |
+| `90-leaver-workflow-tasks.png` | 6 | Leaver workflow tasks: disable, remove groups, remove Teams |
+| `91-leaver-workflow-review-create.png` | 6 | Workflow review+create: scope rule, leave-date trigger, tasks |
+| `92-leaver-workflow-whatif-ben-in-scope.png` | 6 | What-if: Ben in scope, account enabled, 0 predicted failures |
+| `93-leaver-workflow-history-ben-completed.png` | 6 | Workflow history: Ben processed, 3 tasks, completed |
+| `94-ben-disabled-after-workflow.png` | 6 | Ben disabled after workflow; 1 group membership remains (dynamic group finding) |
+| `95-leaver-workflow-schedule-enabled.png` | 6 | Workflow schedule enabled (Amara's automated path) |
+
+
 
 
 
