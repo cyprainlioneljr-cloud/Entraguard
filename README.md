@@ -153,3 +153,99 @@ P1, no P2 clock consumed. Next: Sprint 6 (Identity Governance), which is P2-depe
 P2 trial expires 8/15/2026. Decision checkpoint 8/9/2026. Sprint 6 leans on P2/Governance
 (access reviews, entitlement management, lifecycle workflows); prioritize before deadline.
 
+## Trial Clocks (update, TWO now)
+
+| Trial | Expires | Note |
+| Entra ID P2 | 8/15/2026 | Checkpoint 8/9. Tighter clock. Covers Access Reviews, Entitlement Mgmt, PIM. |
+| Entra ID Governance | ~8/29/2026 (30 days from 7/30) | 25 seats. Covers Lifecycle Workflows. VERIFY in M365 admin center it is a TRIAL, not a paid subscription (activation flow mentioned billing statements). |
+
+ACTION: Confirm the Governance activation is a trial with an end date in admin.microsoft.com > Billing > Your products. If it shows as paid, note the cancellation date.
+
+---
+
+## Architecture Decisions (append)
+
+### AD-014: Dormant external account dispositioned (Sprint 3-4-6 arc closed)
+**Date:** 2026-07-30
+**Decision:** Disable (not delete) the dormant external account
+meridianfg_outlook.com#EXT# (Object ID 8f12858c-...), staged for deletion after a
+grace period. Dispositioned directly rather than via a guest access review.
+**Rationale:** Account confirmed fully orphaned (0 groups/roles/licenses). Disable-first
+is reversible and guards against non-interactive dependencies; direct disposition avoids
+per-guest Governance billing. Closes the arc: detected S3, Owner removed S4, dispositioned S6.
+
+### AD-015: Consistent approver identity across governance mechanisms
+**Date:** 2026-07-31
+**Decision:** Use admin-approver as the specific approver for the access package, matching
+its role as PIM approver (S4) and access reviewer (S6).
+**Rationale:** One approver persona across PIM, access reviews, and entitlement management
+gives a clean, consistent segregation-of-duties story.
+
+### AD-016: Entitlement catalog kept internal-only
+**Date:** 2026-07-31
+**Decision:** Meridian-App-Access catalog not enabled for external users.
+**Rationale:** Matches the internal self-service scenario and avoids per-guest Entra ID
+Governance billing (in effect since 1/15/2026).
+
+### AD-017: Leaver workflow relies on account disable as the access cut
+**Date:** 2026-07-31
+**Decision:** Accept that the "remove from all groups" task cannot remove users from
+dynamic groups; account disable is the definitive access cut. Note attribute-clear as a
+production enhancement.
+**Rationale:** Dynamic group membership is attribute-computed; a departed user still
+matching department eq 'Risk and Compliance' persists in sg-dyn-risk-compliance. A
+disabled account has no usable access regardless.
+
+---
+
+## Lessons Learned (append)
+
+- Access review decision helpers recommend; the human decides. Both test users were flagged
+  inactive and recommended for Deny; the reviewer approved with justification because they
+  were known-active test accounts. Blindly accepting recommendations would have removed access.
+- Account disable, not group removal, is the definitive offboarding access cut. Dynamic
+  group membership survives the remove-from-all-groups task.
+- Lifecycle Workflows are licensed per governed user, not per admin.
+- Graph SDK Update-MgUser -AdditionalProperties can silently no-op on employeeLeaveDateTime;
+  use Invoke-MgGraphRequest PATCH, and verify with a raw GET (the value lands in the typed
+  model, not AdditionalProperties, so Get-MgUser -Property read-backs can look blank).
+- In production, employeeLeaveDateTime is written by HR provisioning (Workday/SuccessFactors),
+  which is what fires the leaver workflow automatically.
+- The leaver template did not include a remove-licenses task; Ben retained 2 licenses. Add
+  that task in production to stop licensing departed users.
+
+---
+
+## Applications / Resources (append)
+
+- Access Review: SAML Toolkit - Q3 2026 (quarterly, app-scoped, 2 approved)
+- Catalog: Meridian-App-Access (internal-only)
+- Access Package: SAML Toolkit Access (group resource, admin-approver approval, ~90-day expiry)
+- Lifecycle Workflow: Leaver - Employee Offboarding (scope department eq 'Risk and Compliance',
+  trigger employeeLeaveDateTime, tasks: disable/remove groups/remove Teams; schedule enabled)
+
+---
+
+## Known Issues / Open Items (append)
+
+- Governance trial: confirm it is a trial not a paid subscription (billing-statement language
+  in activation flow).
+- Ben Carter left in sg-dyn-risk-compliance (dynamic group) post-offboarding, expected behavior.
+  Disabled account renders it moot; documented as the dynamic-group finding.
+- Ben retained 2 licenses (template had no remove-licenses task).
+- Amara Johnson scheduled offboarding pending her leave date (7/31); confirm the scheduler
+  fired next session (would be screenshot 96).
+- Dormant external account disabled, staged for deletion after grace period.
+
+---
+
+## Current Sprint (update)
+
+Sprint 6 (Identity Governance) COMPLETE. All three components built: Access Reviews (app
+review + dormant account disposition), Entitlement Management (catalog, access package, full
+request-approve-access loop), Lifecycle Workflows (leaver workflow, on-demand + scheduled).
+Required activating the Entra ID Governance trial for Lifecycle Workflows.
+
+Next: Sprint 7 (Identity Protection & Monitoring), P2-dependent. P2 trial expires 8/15,
+checkpoint 8/9. Governance trial expires ~8/29.
+
