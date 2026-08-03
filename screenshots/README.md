@@ -101,6 +101,16 @@
 | `93-leaver-workflow-history-ben-completed.png` | 6 | Workflow history: Ben processed, 3 tasks, completed |
 | `94-ben-disabled-after-workflow.png` | 6 | Ben disabled after workflow; 1 group membership remains (dynamic group finding) |
 | `95-leaver-workflow-schedule-enabled.png` | 6 | Workflow schedule enabled (Amara's automated path) |
+| `96-id-protection-dashboard.png` | 7 | Identity Protection Risk detections, clean tenant, CA-remediation banner |
+| `97-risk-detections-list.png` | 7 | Detection type filter catalog |
+| `98-mfa-registration-policy-on.png` | 7 | MFA registration policy enabled, break-glass excluded |
+| `99-ca20-signin-risk-config.png` | 7 | CA20 report-only, sign-in risk Medium+High, require MFA, 2 excluded |
+| `100-ca21-user-risk-config.png` | 7 | CA21 report-only, user risk High, require password change |
+| `101-ca21-grant-password-change.png` | 7 | CA21 grant control detail |
+| `102-risky-signin-anonymous-ip.png` | 7 | Live Anonymous IP detection, test user, Stockholm and Amsterdam Tor nodes |
+| `103-risky-signin-report-only-result.png` | 7 | Sign-in detail Medium; report-only shows CA20 not applied at High |
+| `104-risky-workload-identities.png` | 7 | Risky workload identities page, clean tenant |
+| `105-workload-id-trial-not-available.png` | 7 | Licenses activation blade without Workload ID Premium (boundary) |
 
 
 
