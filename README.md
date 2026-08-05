@@ -10,8 +10,8 @@ Enterprise IAM lab built on Microsoft Entra ID , identity governance, Conditiona
 | 4 | Privileged Access | ✅ Complete | — |
 | 5 | Federation & App Integration | ✅ Complete | — |
 | 6 | Identity Governance | ✅ Complete| — |
-| 7 | Identity Protection & Monitoring | ⬜ Backlog | — |
-| 8 | Identity Automation | ⬜ Backlog | — |
+| 7 | Identity Protection & Monitoring | ✅ Complete | — |
+| 8 | Identity Automation | ✅ Complete | — |
 | 9 | Governance, Audit & Compliance | ⬜ Backlog | — |
 | 10 | Portfolio Finalization & Live Operations | ⬜ Backlog | — |
 
@@ -248,4 +248,83 @@ Required activating the Entra ID Governance trial for Lifecycle Workflows.
 
 Next: Sprint 7 (Identity Protection & Monitoring), P2-dependent. P2 trial expires 8/15,
 checkpoint 8/9. Governance trial expires ~8/29.
+
+Sprint 8 (Identity Automation): complete. Next is Sprint 9 (Governance, Audit and Compliance).
+
+## Completed Sprints
+
+- **Sprint 8** (Identity Automation): Joiner and leaver Graph scripts proving attribute-driven lifecycle (department drives sg-dyn-finance membership both ways). Logic App (Consumption) with system-assigned managed identity and least-privilege Graph app roles, running an event-driven risk-response workflow (query risky users, disable, revoke sessions) behind a human approval gate. Azure Automation runbook with read-only managed identity producing a weekly dormant-accounts hygiene report (found 17 dormant of 27). All automation on managed identities, no stored secrets.
+
+## Architecture Decisions
+
+**AD-011: Managed identity for all automation, no stored secrets.**
+Every automated identity (Logic App, Automation Account) uses a system-assigned managed identity. No client secrets in any workflow. Granting Graph app permissions to a managed identity has no portal UI; done via Graph PowerShell app-role assignments.
+
+**AD-012: Least privilege differentiated by function.**
+Containment Logic App: User.ReadWrite.All + Directory.ReadWrite.All (must disable/revoke). Hygiene runbook: User.Read.All + AuditLog.Read.All only (must never modify). A read-only reporter cannot cause harm if compromised.
+
+**AD-013: Approval gate built with built-in actions; email connector documented as production integration.**
+Office 365 Outlook approval connector requires a REST-enabled Exchange mailbox, which the P2-only trial lacks (MailboxNotEnabledForRESTAPI). Gate built with a Condition node instead; email/Teams approval documented as the licensed-tenant integration point. Honest-boundary pattern, same as Sprint 5 SCIM and Sprint 7 workload identity.
+
+## Scripts Created
+
+- `graph-joiner.ps1`: create user, set department, assign license, confirm dynamic-group auto-join. Includes pinned module-import header.
+- `graph-leaver.ps1`: disable, revoke sessions, transition department to "Offboarded". Includes the dynamic-group and no-null lessons inline.
+- `rb-identity-hygiene-report.ps1`: Azure Automation runbook, connects as managed identity, reports dormant accounts.
+- Logic App workflow definition (`workflow-definition.json`).
+
+## Graph Permissions Used
+
+Interactive tooling (app-role assignment): AppRoleAssignment.ReadWrite.All, Application.Read.All.
+Logic App managed identity: User.ReadWrite.All, Directory.ReadWrite.All.
+Automation runbook managed identity: User.Read.All, AuditLog.Read.All.
+
+## Azure Resources Created
+
+- Resource group: rg-entraguard-automation
+- Logic App (Consumption): la-entraguard-risk-response
+- Automation Account: aa-entraguard-hygiene
+- Runbook: rb-identity-hygiene-report (PowerShell 7.2), schedule weekly-hygiene-scan
+
+## Licensing and Cost
+
+- Logic App Consumption: pay-per-operation, negligible.
+- Azure Automation: free tier (500 min/month) covers a weekly runbook.
+- Risky-users query uses P2 (completed while trial live).
+- Office 365 Outlook approval connector: needs Exchange mailbox, not available on P2-only trial. Not procured.
+
+## Lessons Learned
+
+- Graph SDK sub-module versions must match. Mixing 2.38/2.39 caused repeated failures. Pin to one version; scripts now carry an import header.
+- Dynamic-group membership is attribute-driven both ways. Cannot remove directly; change the source attribute. Do not null it; transition to a defined state ("Offboarded").
+- Entra admin roles do not grant Azure resource permissions. Needed Azure RBAC via PIM to create the resource group.
+- Resource providers register per subscription. Microsoft.Automation had to be registered (subscription scope) before creating the Automation Account.
+- Outlook approval connector needs an Exchange mailbox; P2-only trial has none.
+- Logic App conditions compare types strictly. String "True" never equals boolean true. Highest-value debugging lesson of the sprint.
+- Graph omits fields unless $select-ed. accountEnabled was absent until explicitly selected.
+- Granting app permissions to a managed identity has no portal UI.
+
+## Known Issues / Open Items
+
+- Logic App query is set to the real risky-users filter (production state). Workflow is enabled but note it runs hourly and will act on any live high-risk user; consider disabling the Recurrence or keeping report-style until ready for live enforcement.
+- Approval gate is mechanical (Condition). Email/Teams approval is the pending production integration if Exchange licensing is added.
+- Two Microsoft sample runbooks deleted; test user auto.joiner.test deleted (soft-delete, recoverable 30 days).
+
+## Next-Session Steps
+
+- Scope Sprint 9 (Governance, Audit and Compliance): audit evidence, access certification, framework mapping (SOX/GLBA + ISO 27001), AI-governance angle (ISO 42001) from the SOC lab.
+- Decide whether to enable live enforcement on the risk-response workflow or keep it gated/manual.
+
+## P2 Trial Clock
+
+- Decision checkpoint: 8/9/2026. Expires: 8/15/2026.
+- Sprint 8's P2-dependent piece (risky-users query) is complete. Remaining sprints (9-10) are largely not P2-gated.
+
+## Résumé Accomplishments / Interview Stories (HELD for lab-end consolidation)
+
+Per project convention, portfolio material is not delivered per sprint. Captured here as held raw material for the Sprint 10 consolidated package.
+
+**Résumé accomplishment (held):** Built an end-to-end identity automation stack for a simulated regulated firm: Graph-based joiner/leaver lifecycle, an event-driven Logic App that disables and revokes sessions for high-risk accounts behind a human approval gate, and a scheduled Azure Automation runbook for dormant-account governance, all on managed identities with no stored secrets.
+
+**STAR story (held):** Situation, Meridian needed automated containment of compromised identities and scheduled access hygiene, without storing credentials in automation. Task, build both event-driven response and scheduled governance securely. Action, used system-assigned managed identities for every workflow, granted least-privilege Graph app roles differentiated by function (write for containment, read-only for reporting), built a risk-response Logic App with a human approval gate, and a weekly hygiene runbook; worked through module version clashes, RBAC scope walls, a resource-provider registration, a mailbox licensing boundary, and a string-vs-boolean condition bug. Result, containment in seconds behind a decision point, plus audit-ready weekly dormancy reporting, no secrets anywhere.
 
