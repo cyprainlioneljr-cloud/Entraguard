@@ -111,6 +111,17 @@
 | `103-risky-signin-report-only-result.png` | 7 | Sign-in detail Medium; report-only shows CA20 not applied at High |
 | `104-risky-workload-identities.png` | 7 | Risky workload identities page, clean tenant |
 | `105-workload-id-trial-not-available.png` | 7 | Licenses activation blade without Workload ID Premium (boundary) |
+| `106-joiner-full-chain.png` | 8 | Joiner: user created, license assigned, auto-joined sg-dyn-finance |
+| `107-license-skus.png` | 8 | Tenant license SKUs (AAD_PREMIUM_P2, Entra ID Governance) |
+| `108-logic-app-created.png` | 8 | Logic App la-entraguard-risk-response deployed (Consumption) |
+| `109-managed-identity-on.png` | 8 | Logic App system-assigned managed identity On, principal ID |
+| `110-graph-permissions-granted.png` | 8 | User.ReadWrite.All + Directory.ReadWrite.All granted to Logic App identity |
+| `111-workflow-runs-history.png` | 8 | Risk-response workflow run history, succeeded |
+| `112-approval-gate-disabled.png` | 8 | AccountEnabled False after gated run (approval gate working) |
+| `113-automation-account-created.png` | 8 | Automation Account aa-entraguard-hygiene deployed |
+| `114-automation-graph-permissions.png` | 8 | User.Read.All + AuditLog.Read.All (read-only) granted to runbook identity |
+| `115-hygiene-report-output.png` | 8 | Runbook output: 17 dormant of 27 enabled members |
+| `116-runbook-schedule.png` | 8 | weekly-hygiene-scan schedule linked to runbook |
 
 
 
