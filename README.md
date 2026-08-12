@@ -1,330 +1,77 @@
-# Entraguard
-Enterprise IAM lab built on Microsoft Entra ID , identity governance, Conditional Access, PIM, and lifecycle automation for a simulated financial services firm.
+# EntraGuard: Enterprise Identity Security and Governance Lab
+
+EntraGuard is a multi-sprint Microsoft Entra ID zero-trust identity and access management lab simulating a regulated financial firm, Meridian Financial Group. It is the identity-focused companion to the completed Azure Zero Trust SOC Lab (Provost Inc): where the SOC lab centered on detection, SIEM, and response, EntraGuard centers on identity as the control plane, governance, lifecycle, privileged access, and access-based defense.
+
+The lab is built and documented sprint by sprint against a real Entra tenant, mapped to the SC-300, AZ-500, and SC-200 certifications.
+
 ## Sprint Status
 
-| Sprint | Name | Status | Completed |
-|--------|------|--------|-----------|
-| 1 | Foundation & Tenant Design |  ✅ Complete| — |
-| 2 | Identity Lifecycle & Structure |  ✅ Complete | — |
-| 3 | Authentication & Access Foundations | ✅ Complete | — |
-| 4 | Privileged Access | ✅ Complete | — |
-| 5 | Federation & App Integration | ✅ Complete | — |
-| 6 | Identity Governance | ✅ Complete| — |
-| 7 | Identity Protection & Monitoring | ✅ Complete | — |
-| 8 | Identity Automation | ✅ Complete | — |
-| 9 | Governance, Audit & Compliance | ✅ Complete  | — |
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| 1 | Foundation and Tenant Design | Complete |
+| 2 | Identity Lifecycle and Structure | Complete |
+| 3 | Authentication and Access Foundations | Complete |
+| 4 | Privileged Access with PIM | Complete |
+| 5 | Federation and Application Integration | Complete |
+| 6 | Identity Governance | Complete |
+| 7 | Identity Protection and Risk-Based Conditional Access | Complete |
+| 8 | Identity Automation | Complete |
+| 9 | Governance, Audit, and Compliance | Complete (with documented deviations, see AD-014, AD-015) |
+| 10 | Portfolio Finalization and Live Operations | Pending |
 
+Sprint 9 note: audit-evidence and framework-mapping objectives were met. Block 3 (log retention) was delivered as a design rather than a live build due to a disabled subscription (AD-014). Block 2 (recertification) surfaced a Global Administrator lockout incident, documented in full and resolved with AD-015. Tenant recovery is an open item.
 
+## Where things live
 
-## Architecture Decisions (append)
+The repository is organized by topic. Sprint writeups sit in the topic folder that best matches their subject, with cross-link stubs from other relevant folders for multi-topic sprints.
 
-### AD-009: Dormant external account held standing subscription Owner (finding + remediation)
-**Date:** 2026-07-28
-**Finding:** During the Azure resource PIM audit, the subscription had two standing
-Owner assignments belonging to `meridianfg_outlook.com#EXT#@meridianfgoutlook.onmicrosoft.com`
-(Object ID 8f12858c-9c4c-4807-89f5-b1e03fed18dd), an external MicrosoftAccount with
-zero authentication methods, zero licenses, and zero group memberships. This is the
-same dormant guest-format account flagged in Sprint 3. It is the original account
-that bootstrapped the subscription. Azure's own IAM banner flagged the elevated access.
-**Decision:** Remediate by granting adm-provost Owner first (safe management path),
-then removing both external Owner grants, then converting adm-provost Owner to
-PIM-eligible. Leave the external identity in the directory for formal Sprint 6 access
-review rather than deleting it mid-cutover.
-**Rationale:** An external, MFA-less, dormant account with standing subscription Owner
-is a severe standing-privilege risk in a regulated financial tenant. Removing it
-directly without a replacement Owner risked stranding subscription management, so the
-replacement path was established first.
+| Content | Location |
+|---------|----------|
+| Sprint 1 (foundation) | `architecture/` |
+| Sprint 2 (identity lifecycle) | `identity-access/` |
+| Sprint 3 and 5 (auth, federation) | `authentication/` |
+| Sprint 4 (PIM) | `pim/` |
+| Sprint 6 and 9 (governance) | `identity-governance/` |
+| Sprint 7 (risk-based CA) | `conditional-access/` |
+| Sprint 8 (automation) | `logic-apps/` |
+| Architecture decision log | `architecture/decision-log.md` |
+| Graph PowerShell scripts | `graph-scripts/` |
+| Azure scripts | `azure-scripts/` |
+| KQL queries | `kql-queries/` |
+| Audit evidence exports | `reports/` |
+| Screenshots and index | `screenshots/` |
 
-### AD-010: PIM tiering gradient for directory and resource roles
-**Date:** 2026-07-28
-**Decision:** Activation duration tightens as blast radius grows; approval reserved for
-crown-jewel roles only.
-| Role | Duration | Approval |
-| Global Administrator | 2h | Yes |
-| Security Administrator | 4h | No |
-| User Administrator | 8h | No |
-| Azure subscription Owner | 4h | No |
-**Rationale:** Gating every role behind approval trains admins to route around the
-control. Approval stays on the roles that can compromise the entire tenant. Operational
-roles get MFA and justification without an approval gate.
+## Environment
 
----
+- **Tenant:** `meridianfgoutlook.onmicrosoft.com` (tenant ID `f54eb811-e94a-4bd3-9931-65e9d5e160e9`)
+- **Primary admin:** adm-provost
+- **Emergency access:** bg-emergency-01, bg-emergency-02 (see AD-015 for corrective rebuild)
+- **Platform:** Microsoft Entra ID, Microsoft 365, Azure subscription
+- **Tooling:** Microsoft Graph PowerShell SDK (sub-modules pinned to matching versions), Azure PowerShell, PowerShell 7 on macOS
 
-## Lessons Learned (append)
+## Licensing and Trial Tracker
 
-- Break-glass is not always needed to remove standing access. It was required in Part 1
-  because an account cannot cleanly remove its own standing assignment (self-referential
-  block). Patricia's User Admin removal, done by the higher-privileged adm-provost on a
-  different account, completed cleanly without break-glass.
-- The most dangerous standing privilege was on the resource plane (subscription Owner),
-  not the identity plane. It surfaced only because the audit extended to Azure resource
-  roles. Cover both planes.
-- Azure resource PIM enforces time-bound eligibility by default (1-year max, no permanent
-  eligibility). Entra role PIM allows permanent eligibility. The Azure default is
-  stricter and arguably better hygiene.
-- A clean post-cutover alert board is evidence the remediation worked, not a non-event.
+| License / trial | Purpose | Status |
+|-----------------|---------|--------|
+| Entra ID P2 (trial) | PIM, Identity Protection, access reviews, risk-based CA | Trial, expiry 8/15/2026 (checkpoint was 8/9/2026) |
+| Entra ID Governance (trial) | Lifecycle Workflows (Sprint 6) | 30-day trial, activated Sprint 6, verify remaining days |
+| Workload Identities Premium | Service principal risk policies (CA22) | Not held, separate SKU (AD-010) |
+| Azure subscription | Resource builds (Logic App, Automation, log storage) | Disabled and read-only, blocks new resources (AD-014); tenant recovery open |
 
----
+Action items: confirm Governance trial days remaining; resolve the disabled subscription; recover Global Administrator access (see AD-015).
 
-## Known Issues / Open Items (append)
+## Cost Tally
 
-- Root-scope elevated access: adm-provost holds User Access Administrator inherited from
-  root (Tenant Root Group). This is the elevation path used to manage the subscription.
-  Azure's "elevated access" banner refers to this after the external-Owner remediation.
-  Separate root-scope cleanup, deferred and noted.
-- Subscription is named "Azure subscription 1" (default). In a production tenant this
-  would be renamed to something meaningful (e.g. meridian-prod-01). Not changed to avoid
-  mid-sprint churn.
-- Dormant external account (meridianfg_outlook.com#EXT#) remains in the directory,
-  Owner role removed, flagged for Sprint 6 access review and possible deletion.
-
----
-
-## Current Sprint (update)
-
-Sprint 4 (Privileged Access) COMPLETE. Both identity-plane roles (Global Admin, User
-Admin, Security Admin) and resource-plane (subscription Owner) converted to just-in-time.
-Standing access eliminated except by-design break-glass. Headline finding (dormant
-external Owner) remediated. Next: Sprint 5 (Federation and App Integration).
-
-P2 trial expires 8/15/2026. Decision checkpoint 8/9/2026. Sprints 5 and 6 lean on
-P2/Governance features; prioritize before the deadline.
-## Architecture Decisions (append)
-
-### AD-011: Dedicated app-assignment group over department group
-**Date:** 2026-07-29
-**Decision:** Create a dedicated group (app-saml-toolkit-users) with assigned
-membership for app access, rather than reusing a Sprint 2 dynamic department group.
-**Rationale:** App access is a deliberate grant that should be governable on its own
-in Sprint 6 (access packages, access reviews), not a side effect of a department
-attribute. Assigned membership keeps the "who approved this access" story clean and
-reviewable.
-
-### AD-012: OIDC app uses no client secret
-**Date:** 2026-07-29
-**Decision:** Register oidc-meridian-webapp with no client secret. Document that
-production would use a certificate or workload identity federation.
-**Rationale:** A client secret is a shared string that can leak, be committed, or be
-stolen. Certificates keep the private key with the app; federated credentials remove
-the stored secret entirely. Client secrets are the weakest option. Stolen app secrets
-are a common breach vector (app authenticates with no user). Choosing the stronger
-model demonstrates security judgment.
-
-### AD-013: SCIM demonstrated to the connection boundary (Path A)
-**Date:** 2026-07-30
-**Decision:** Demonstrate the full Entra-side SCIM provisioning configuration up to the
-connection test, and document mappings/scoping as concepts, rather than standing up a
-live SCIM endpoint.
-**Rationale:** Real SaaS SCIM targets gate the endpoint behind paid enterprise tiers; a
-self-hosted endpoint needs an Azure App Service (possible cost, unsupported .NET sample).
-Test Connection against a reserved .invalid placeholder returned CredentialValidationUnavailable
-as expected, confirming Entra reaches and authenticates to the endpoint. This honestly
-shows the skill and the environment boundary. A live endpoint is a future enhancement.
-
----
-
-## Lessons Learned (append)
-
-- Gallery apps pre-populate SAML Identifier and Reply URL; custom non-gallery apps do not.
-- NameID format matters: the SAML Toolkit expects emailAddress format. UPN worked only
-  because UPN and email aligned on the .onmicrosoft.com domain. A mismatch fails sign-in.
-- Delegated vs application permissions is a core interview distinction: delegated acts as
-  the signed-in user (bounded); application acts as the app with no user (higher risk).
-- Not creating something can be the stronger security stance (OIDC client secret).
-- SCIM mappings and scoping blades unlock only after a validated live connection.
-
----
-
-## Applications Registered (append)
-
-- Microsoft Entra SAML Toolkit (gallery, SAML SSO, group-assigned, claims trimmed) - SSO validated
-- oidc-meridian-webapp (App registration, OIDC, single-tenant, User.Read, no secret)
-- scim-meridian-provisioning (non-gallery, SCIM provisioning config to connection boundary)
-
----
-
-## Current Sprint (update)
-
-Sprint 5 (Federation and App Integration) COMPLETE. Three integrations demonstrated:
-SAML SSO (live federated sign-in proven), OIDC (least-privilege, secure credential
-choice), SCIM (configured to connection boundary, mappings/scoping documented). All on
-P1, no P2 clock consumed. Next: Sprint 6 (Identity Governance), which is P2-dependent.
-
-P2 trial expires 8/15/2026. Decision checkpoint 8/9/2026. Sprint 6 leans on P2/Governance
-(access reviews, entitlement management, lifecycle workflows); prioritize before deadline.
-
-## Trial Clocks (update, TWO now)
-
-| Trial | Expires | Note |
-| Entra ID P2 | 8/15/2026 | Checkpoint 8/9. Tighter clock. Covers Access Reviews, Entitlement Mgmt, PIM. |
-| Entra ID Governance | ~8/29/2026 (30 days from 7/30) | 25 seats. Covers Lifecycle Workflows. VERIFY in M365 admin center it is a TRIAL, not a paid subscription (activation flow mentioned billing statements). |
-
-ACTION: Confirm the Governance activation is a trial with an end date in admin.microsoft.com > Billing > Your products. If it shows as paid, note the cancellation date.
-
----
-
-## Architecture Decisions (append)
-
-### AD-014: Dormant external account dispositioned (Sprint 3-4-6 arc closed)
-**Date:** 2026-07-30
-**Decision:** Disable (not delete) the dormant external account
-meridianfg_outlook.com#EXT# (Object ID 8f12858c-...), staged for deletion after a
-grace period. Dispositioned directly rather than via a guest access review.
-**Rationale:** Account confirmed fully orphaned (0 groups/roles/licenses). Disable-first
-is reversible and guards against non-interactive dependencies; direct disposition avoids
-per-guest Governance billing. Closes the arc: detected S3, Owner removed S4, dispositioned S6.
-
-### AD-015: Consistent approver identity across governance mechanisms
-**Date:** 2026-07-31
-**Decision:** Use admin-approver as the specific approver for the access package, matching
-its role as PIM approver (S4) and access reviewer (S6).
-**Rationale:** One approver persona across PIM, access reviews, and entitlement management
-gives a clean, consistent segregation-of-duties story.
-
-### AD-016: Entitlement catalog kept internal-only
-**Date:** 2026-07-31
-**Decision:** Meridian-App-Access catalog not enabled for external users.
-**Rationale:** Matches the internal self-service scenario and avoids per-guest Entra ID
-Governance billing (in effect since 1/15/2026).
-
-### AD-017: Leaver workflow relies on account disable as the access cut
-**Date:** 2026-07-31
-**Decision:** Accept that the "remove from all groups" task cannot remove users from
-dynamic groups; account disable is the definitive access cut. Note attribute-clear as a
-production enhancement.
-**Rationale:** Dynamic group membership is attribute-computed; a departed user still
-matching department eq 'Risk and Compliance' persists in sg-dyn-risk-compliance. A
-disabled account has no usable access regardless.
-
----
-
-## Lessons Learned (append)
-
-- Access review decision helpers recommend; the human decides. Both test users were flagged
-  inactive and recommended for Deny; the reviewer approved with justification because they
-  were known-active test accounts. Blindly accepting recommendations would have removed access.
-- Account disable, not group removal, is the definitive offboarding access cut. Dynamic
-  group membership survives the remove-from-all-groups task.
-- Lifecycle Workflows are licensed per governed user, not per admin.
-- Graph SDK Update-MgUser -AdditionalProperties can silently no-op on employeeLeaveDateTime;
-  use Invoke-MgGraphRequest PATCH, and verify with a raw GET (the value lands in the typed
-  model, not AdditionalProperties, so Get-MgUser -Property read-backs can look blank).
-- In production, employeeLeaveDateTime is written by HR provisioning (Workday/SuccessFactors),
-  which is what fires the leaver workflow automatically.
-- The leaver template did not include a remove-licenses task; Ben retained 2 licenses. Add
-  that task in production to stop licensing departed users.
-
----
-
-## Applications / Resources (append)
-
-- Access Review: SAML Toolkit - Q3 2026 (quarterly, app-scoped, 2 approved)
-- Catalog: Meridian-App-Access (internal-only)
-- Access Package: SAML Toolkit Access (group resource, admin-approver approval, ~90-day expiry)
-- Lifecycle Workflow: Leaver - Employee Offboarding (scope department eq 'Risk and Compliance',
-  trigger employeeLeaveDateTime, tasks: disable/remove groups/remove Teams; schedule enabled)
-
----
-
-## Known Issues / Open Items (append)
-
-- Governance trial: confirm it is a trial not a paid subscription (billing-statement language
-  in activation flow).
-- Ben Carter left in sg-dyn-risk-compliance (dynamic group) post-offboarding, expected behavior.
-  Disabled account renders it moot; documented as the dynamic-group finding.
-- Ben retained 2 licenses (template had no remove-licenses task).
-- Amara Johnson scheduled offboarding pending her leave date (7/31); confirm the scheduler
-  fired next session (would be screenshot 96).
-- Dormant external account disabled, staged for deletion after grace period.
-
----
-
-## Current Sprint (update)
-
-Sprint 6 (Identity Governance) COMPLETE. All three components built: Access Reviews (app
-review + dormant account disposition), Entitlement Management (catalog, access package, full
-request-approve-access loop), Lifecycle Workflows (leaver workflow, on-demand + scheduled).
-Required activating the Entra ID Governance trial for Lifecycle Workflows.
-
-Next: Sprint 7 (Identity Protection & Monitoring), P2-dependent. P2 trial expires 8/15,
-checkpoint 8/9. Governance trial expires ~8/29.
-
-Sprint 8 (Identity Automation): complete. Next is Sprint 9 (Governance, Audit and Compliance).
-
-## Completed Sprints
-
-- **Sprint 8** (Identity Automation): Joiner and leaver Graph scripts proving attribute-driven lifecycle (department drives sg-dyn-finance membership both ways). Logic App (Consumption) with system-assigned managed identity and least-privilege Graph app roles, running an event-driven risk-response workflow (query risky users, disable, revoke sessions) behind a human approval gate. Azure Automation runbook with read-only managed identity producing a weekly dormant-accounts hygiene report (found 17 dormant of 27). All automation on managed identities, no stored secrets.
+| Item | Cost |
+|------|------|
+| Azure free account and Entra Free tier (Sprint 1) | $0 |
+| Entra P2 and Governance trials | $0 (trial) |
+| Logic App (Consumption), Azure Automation (Sprint 8) | Negligible at lab scale |
+| Log archive storage (Sprint 9, design only, not built) | Would be under $1/month at lab scale |
+| **Running total** | Effectively $0 to date |
 
 ## Architecture Decisions
 
-**AD-011: Managed identity for all automation, no stored secrets.**
-Every automated identity (Logic App, Automation Account) uses a system-assigned managed identity. No client secrets in any workflow. Granting Graph app permissions to a managed identity has no portal UI; done via Graph PowerShell app-role assignments.
+The full decision log (AD-001 through AD-015) lives at `architecture/decision-log.md`. It is the authoritative record of why the design looks the way it does.
 
-**AD-012: Least privilege differentiated by function.**
-Containment Logic App: User.ReadWrite.All + Directory.ReadWrite.All (must disable/revoke). Hygiene runbook: User.Read.All + AuditLog.Read.All only (must never modify). A read-only reporter cannot cause harm if compromised.
-
-**AD-013: Approval gate built with built-in actions; email connector documented as production integration.**
-Office 365 Outlook approval connector requires a REST-enabled Exchange mailbox, which the P2-only trial lacks (MailboxNotEnabledForRESTAPI). Gate built with a Condition node instead; email/Teams approval documented as the licensed-tenant integration point. Honest-boundary pattern, same as Sprint 5 SCIM and Sprint 7 workload identity.
-
-## Scripts Created
-
-- `graph-joiner.ps1`: create user, set department, assign license, confirm dynamic-group auto-join. Includes pinned module-import header.
-- `graph-leaver.ps1`: disable, revoke sessions, transition department to "Offboarded". Includes the dynamic-group and no-null lessons inline.
-- `rb-identity-hygiene-report.ps1`: Azure Automation runbook, connects as managed identity, reports dormant accounts.
-- Logic App workflow definition (`workflow-definition.json`).
-
-## Graph Permissions Used
-
-Interactive tooling (app-role assignment): AppRoleAssignment.ReadWrite.All, Application.Read.All.
-Logic App managed identity: User.ReadWrite.All, Directory.ReadWrite.All.
-Automation runbook managed identity: User.Read.All, AuditLog.Read.All.
-
-## Azure Resources Created
-
-- Resource group: rg-entraguard-automation
-- Logic App (Consumption): la-entraguard-risk-response
-- Automation Account: aa-entraguard-hygiene
-- Runbook: rb-identity-hygiene-report (PowerShell 7.2), schedule weekly-hygiene-scan
-
-## Licensing and Cost
-
-- Logic App Consumption: pay-per-operation, negligible.
-- Azure Automation: free tier (500 min/month) covers a weekly runbook.
-- Risky-users query uses P2 (completed while trial live).
-- Office 365 Outlook approval connector: needs Exchange mailbox, not available on P2-only trial. Not procured.
-
-## Lessons Learned
-
-- Graph SDK sub-module versions must match. Mixing 2.38/2.39 caused repeated failures. Pin to one version; scripts now carry an import header.
-- Dynamic-group membership is attribute-driven both ways. Cannot remove directly; change the source attribute. Do not null it; transition to a defined state ("Offboarded").
-- Entra admin roles do not grant Azure resource permissions. Needed Azure RBAC via PIM to create the resource group.
-- Resource providers register per subscription. Microsoft.Automation had to be registered (subscription scope) before creating the Automation Account.
-- Outlook approval connector needs an Exchange mailbox; P2-only trial has none.
-- Logic App conditions compare types strictly. String "True" never equals boolean true. Highest-value debugging lesson of the sprint.
-- Graph omits fields unless $select-ed. accountEnabled was absent until explicitly selected.
-- Granting app permissions to a managed identity has no portal UI.
-
-## Known Issues / Open Items
-
-- Logic App query is set to the real risky-users filter (production state). Workflow is enabled but note it runs hourly and will act on any live high-risk user; consider disabling the Recurrence or keeping report-style until ready for live enforcement.
-- Approval gate is mechanical (Condition). Email/Teams approval is the pending production integration if Exchange licensing is added.
-- Two Microsoft sample runbooks deleted; test user auto.joiner.test deleted (soft-delete, recoverable 30 days).
-
-## Next-Session Steps
-
-- Scope Sprint 9 (Governance, Audit and Compliance): audit evidence, access certification, framework mapping (SOX/GLBA + ISO 27001), AI-governance angle (ISO 42001) from the SOC lab.
-- Decide whether to enable live enforcement on the risk-response workflow or keep it gated/manual.
-
-## P2 Trial Clock
-
-- Decision checkpoint: 8/9/2026. Expires: 8/15/2026.
-- Sprint 8's P2-dependent piece (risky-users query) is complete. Remaining sprints (9-10) are largely not P2-gated.
-
-## Résumé Accomplishments / Interview Stories (HELD for lab-end consolidation)
-
-Per project convention, portfolio material is not delivered per sprint. Captured here as held raw material for the Sprint 10 consolidated package.
-
-**Résumé accomplishment (held):** Built an end-to-end identity automation stack for a simulated regulated firm: Graph-based joiner/leaver lifecycle, an event-driven Logic App that disables and revokes sessions for high-risk accounts behind a human approval gate, and a scheduled Azure Automation runbook for dormant-account governance, all on managed identities with no stored secrets.
-
-**STAR story (held):** Situation, Meridian needed automated containment of compromised identities and scheduled access hygiene, without storing credentials in automation. Task, build both event-driven response and scheduled governance securely. Action, used system-assigned managed identities for every workflow, granted least-privilege Graph app roles differentiated by function (write for containment, read-only for reporting), built a risk-response Logic App with a human approval gate, and a weekly hygiene runbook; worked through module version clashes, RBAC scope walls, a resource-provider registration, a mailbox licensing boundary, and a string-vs-boolean condition bug. Result, containment in seconds behind a decision point, plus audit-ready weekly dormancy reporting, no secrets anywhere.
 
