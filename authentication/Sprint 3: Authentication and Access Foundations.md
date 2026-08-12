@@ -1,9 +1,3 @@
-EntraGuard - Enterprise Identity Security and Governance Lab
-Meridian Financial Group
-
-Status: Build and validation complete. Enforcement cutover is the final gated step.
-
----
 
 ## Introduction
 
