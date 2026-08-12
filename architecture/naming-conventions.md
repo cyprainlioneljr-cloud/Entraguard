@@ -49,6 +49,3 @@ Current register: `AD-001` through `AD-004`.
 
 ## Rules
 
-1. Use lowercase letters and hyphens in every filename. Do not use spaces or timestamps as filenames.
-2. Every prefix has a defined purpose. Never reuse a prefix for a different object type.
-3. Any object that does not follow one of the documented naming patterns must either be documented here or renamed.
