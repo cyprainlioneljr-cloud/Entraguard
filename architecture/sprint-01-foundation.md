@@ -1,4 +1,6 @@
 
+# Sprint 1: Foundation and Tenant Design
+
 ## Introduction
 
 Sprint 1 established the identity foundation for Meridian Financial Group: a

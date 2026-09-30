@@ -1,3 +1,5 @@
+# Sprint 2: Identity Lifecycle and Structure
+
 ## Introduction
 
 Sprint 2 populated Meridian with a realistic workforce and made the directory

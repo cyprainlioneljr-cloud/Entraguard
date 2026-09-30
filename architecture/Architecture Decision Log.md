@@ -177,25 +177,25 @@ Authoritative record of the architecture decisions made across the EntraGuard pr
 
 **Rationale:** Managed identities remove stored credentials entirely. Granting Graph app permissions to a managed identity has no portal UI; done via Graph PowerShell app-role assignments.
 
-## AD-019: Least privilege differentiated by function
+## AD-019: Permissions differentiated by function
 
 **Sprint:** 8
 
 **Original label:** AD-012 (Sprint 8), renumbered to resolve collision.
 
-**Decision:** Containment Logic App gets User.ReadWrite.All and Directory.ReadWrite.All (must disable and revoke). Hygiene runbook gets User.Read.All and AuditLog.Read.All only (must never modify).
+**Decision:** Containment Logic App gets User.ReadWrite.All and Directory.ReadWrite.All for the lab workflow. Hygiene runbook gets User.Read.All and AuditLog.Read.All only.
 
-**Rationale:** A read-only reporter cannot cause harm if compromised. Permissions scale to function, not convenience.
+**Rationale:** A read-only reporter has less ability to modify the tenant if compromised. Permissions are differentiated by function rather than copied across both identities. Directory.ReadWrite.All is broad and remains a production-hardening review item rather than being presented as the minimum possible permission.
 
-## AD-020: Approval gate built with built-in actions, email connector deferred
+## AD-020: Condition gate built with built-in actions, human approval connector deferred
 
 **Sprint:** 8
 
 **Original label:** AD-013 (Sprint 8), renumbered to resolve collision.
 
-**Decision:** The Office 365 Outlook approval connector requires a REST-enabled Exchange mailbox, which the P2-only trial lacks (MailboxNotEnabledForRESTAPI). Build the gate with a Condition node instead; document email or Teams approval as the licensed-tenant integration point.
+**Decision:** The Office 365 Outlook approval connector requires a REST-enabled Exchange mailbox, which the P2-only trial lacks (MailboxNotEnabledForRESTAPI). Validate the decision-point structure with a Condition node instead; document email or Teams approval as the licensed-tenant integration point. Do not represent the Condition as a live human approval response.
 
-**Rationale:** Honest-boundary pattern, the same approach used for the Sprint 5 SCIM connection boundary (AD-013) and the Sprint 7 workload identity boundary (AD-010). The approval-gate design stands; only the specific connector was unavailable.
+**Rationale:** Honest-boundary pattern, the same approach used for the Sprint 5 SCIM connection boundary (AD-013) and the workload-identity licensing boundary documented in Sprint 7. The condition-gate design stands; only the live human approval connector was unavailable.
 
 ## AD-021: Log retention delivered as design, not live build
 
@@ -203,7 +203,7 @@ Authoritative record of the architecture decisions made across the EntraGuard pr
 
 **Decision:** Deliver Block 3 (log retention) as a validated design plus documentation rather than a live build, because the Azure subscription was disabled and read-only at implementation time, blocking resource creation.
 
-**Rationale:** A disabled subscription is a billing state, not an identity-engineering task. Documenting the full retention design (categories, storage destination, lifecycle and immutability controls, cost model) still demonstrates the architecture, which is the skill being evaluated. Consistent with the honest-boundary pattern (AD-010, AD-013, AD-020).
+**Rationale:** A disabled subscription is a billing state, not an identity-engineering task. Documenting the full retention design (categories, storage destination, lifecycle and immutability controls, cost model) demonstrates the architecture without claiming a live build. This follows the honest-boundary pattern used for SCIM (AD-013), the Sprint 7 workload-identity licensing boundary, and the condition gate (AD-020).
 
 **Follow-up:** Re-enable the subscription, then execute the build steps in the log-retention design document.
 

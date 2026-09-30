@@ -1,3 +1,5 @@
+# Sprint 6: Identity Governance
+
 ## Introduction
 
 Identity governance answers the question every auditor asks a regulated firm: who has access to what, is it still justified, and how does access change as people join, move, and leave? This sprint builds the three pillars that answer it. Access Reviews recertify existing access. Entitlement Management turns access into self-service requestable packages with approval and expiration. Lifecycle Workflows automate the joiner, mover, and leaver process so offboarding happens on schedule rather than relying on someone to remember.

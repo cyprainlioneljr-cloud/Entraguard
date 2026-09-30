@@ -1,8 +1,10 @@
+# Sprint 8: Identity Automation
+
 ## Introduction
 
-This sprint turns identity events into deterministic, coded actions. Where earlier sprints built controls a human configures and monitors, Sprint 8 builds automation that provisions, contains, and reports on its own. Three pieces: lifecycle scripts (joiner and leaver) through Microsoft Graph, an event-driven risk-response Logic App with a human approval gate, and a scheduled hygiene runbook in Azure Automation.
+This sprint turns identity events into deterministic, coded actions. Where earlier sprints built controls a human configures and monitors, Sprint 8 builds automation that provisions, contains, and reports on its own. Three pieces: lifecycle scripts (joiner and leaver) through Microsoft Graph, an event-driven risk-response Logic App with a condition-gated decision point, and a scheduled hygiene runbook in Azure Automation.
 
-Every automated identity here authenticates with a managed identity. No secret is stored in any workflow. The identity that acts is Azure-managed, least-privilege, and auditable, which is the secure-by-default pattern for non-human identities and a direct continuation of the workload-identity theme from Sprint 7.
+Every automated identity here authenticates with a managed identity. No secret is stored in any workflow. The identity that acts is Azure-managed and auditable, with its Graph scopes documented for review. This is the secure-by-default pattern for non-human identities and a direct continuation of the workload-identity theme from Sprint 7.
 
 ## Business Scenario
 
@@ -12,16 +14,16 @@ First, containment speed. A compromised account disabled in seconds instead of h
 
 Second, audit cadence. SOX and general audit requirements expect access to be reviewed and stale accounts identified on a schedule, with evidence. A weekly report of dormant accounts is not a nice-to-have, it is the control an auditor asks to see.
 
-The automation must also be safe from itself. Automation that can disable accounts is a target. A human approval gate keeps the workflow from becoming a denial-of-service weapon if it is triggered maliciously or misbehaves.
+The automation must also be safe from itself. Automation that can disable accounts is a target. This lab validates a condition gate that separates detection from action. A production deployment still needs a real human approval response through an available connector before destructive action.
 
 ## Objectives
 
 - Build joiner and leaver lifecycle automation through Microsoft Graph
 - Prove attribute-driven access: setting a department cascades into dynamic group membership
 - Stand up a Logic App that authenticates with a managed identity, no stored secrets
-- Grant the automation identity least-privilege Graph permissions
+- Grant and document function-specific Graph permissions for the automation identities
 - Build an event-driven risk-response workflow that disables and revokes sessions for risky users
-- Insert a human approval gate so no account is disabled without a decision point
+- Insert and validate a condition-gated decision point; document live human approval as the production extension
 - Build a scheduled Azure Automation runbook that reports dormant accounts
 
 ## Certification Objectives Covered
@@ -30,7 +32,7 @@ The automation must also be safe from itself. Automation that can disable accoun
 |------|--------|-------------------------|
 | SC-300 | Implement and manage user lifecycle | Automated joiner/mover/leaver via Graph |
 | SC-300 | Plan and implement identity governance | Scheduled access hygiene reporting |
-| AZ-500 | Manage identity and access | Managed identity, least-privilege app roles for automation |
+| AZ-500 | Manage identity and access | Managed identity and function-specific app roles for automation |
 | SC-200 | Automate threat response | Event-driven disable and session revocation on risk |
 
 ## Technologies Used
@@ -45,7 +47,7 @@ Microsoft Graph PowerShell SDK, Azure Logic Apps (Consumption), Azure Automation
 | Logic App (Consumption) | Pay-per-operation, pennies | Bills only when it runs |
 | Risky-users query | Entra ID P2 | Uses Sprint 7 risk engine |
 | Azure Automation runbook | Free tier covers it | 500 minutes/month free |
-| Office 365 Outlook approval connector | Requires Exchange mailbox | Not available on P2-only trial (see AD-013) |
+| Office 365 Outlook approval connector | Requires Exchange mailbox | Not available on P2-only trial (see AD-020) |
 
 > **Note:** The P2-dependent piece is the risky-users query in the Logic App. That work was completed while the P2 trial was live. The rest of the sprint has no P2 dependency.
 
@@ -56,7 +58,7 @@ Two automation patterns, both on managed identities.
 ```
   EVENT-DRIVEN CONTAINMENT (Logic App)
   Recurrence -> query risky users (P2) -> For each ->
-      Condition (approval gate) -> [True] disable + revoke sessions
+      Condition (decision gate) -> [True] disable + revoke sessions
   Auth: system-assigned managed identity, least-privilege Graph app roles
 
   SCHEDULED GOVERNANCE (Azure Automation)
@@ -69,25 +71,25 @@ Two automation patterns, both on managed identities.
   Leaver: disable -> revoke sessions -> transition department out of dynamic group
 ```
 
-### Architecture Decision AD-011: Managed identity for all automation, no stored secrets
+### Architecture Decision AD-018: Managed identity for all automation, no stored secrets
 
 **Decision.** Every automated identity (Logic App, Automation Account) uses a system-assigned managed identity. No client secrets are stored in any workflow.
 
-**Rationale.** A stored secret is a credential sitting in the automation, exactly what an attacker hunts for. A managed identity has no secret to leak or rotate; Azure supplies the token invisibly. This is the secure-by-default pattern and it applies least privilege to non-human identities, the Sprint 7 workload-identity theme carried into build.
+**Rationale.** A stored secret is a credential sitting in the automation, exactly what an attacker hunts for. A managed identity has no secret to leak or rotate; Azure supplies the token invisibly. This is the secretless authentication pattern carried forward from Sprint 7's workload-identity theme.
 
-**Consequence.** Granting Graph application permissions to a managed identity cannot be done in the portal. There is no UI for it. Permissions are assigned via Graph PowerShell app-role assignments (documented in the scripts).
+**Consequence.** Granting Graph application permissions to a managed identity cannot be done in the portal. There is no UI for it. Permissions were assigned via Graph PowerShell app-role assignments and are documented in this writeup and the screenshots. The supporting Sprint 8 source files are not currently published in the repository.
 
-### Architecture Decision AD-012: Least-privilege, differentiated by function
+### Architecture Decision AD-019: Permissions differentiated by function
 
 **Decision.** The containment Logic App gets read/write user permissions (it must disable and revoke). The hygiene runbook gets read-only permissions (it must never modify).
 
-**Rationale.** A reporter that can only read cannot cause harm if compromised. The worst a compromised hygiene identity could do is read the user list. Differentiating write from read by function is least privilege in practice.
+**Rationale.** A read-only reporter cannot modify directory objects, although compromise would still create a confidentiality risk. Differentiating write from read by function reduces impact compared with granting both identities the same write permissions.
 
-**Consequence.** Logic App identity holds User.ReadWrite.All and Directory.ReadWrite.All. Automation Account identity holds only User.Read.All and AuditLog.Read.All.
+**Consequence.** Logic App identity holds User.ReadWrite.All and Directory.ReadWrite.All. Automation Account identity holds only User.Read.All and AuditLog.Read.All. Directory.ReadWrite.All is broad and should be re-evaluated before production use; the repository does not claim it as the minimum possible permission.
 
-### Architecture Decision AD-013: Approval gate built with built-in actions, email connector documented as production integration
+### Architecture Decision AD-020: Condition gate built with built-in actions, human approval connector documented as production integration
 
-**Decision.** Build the human approval gate as a Condition node with built-in actions. Do not depend on the Office 365 Outlook approval connector.
+**Decision.** Build and validate the decision-point structure as a Condition node with built-in actions. Do not represent it as a live human approval workflow because the Office 365 Outlook approval connector was unavailable.
 
 **Rationale.** The Outlook "Send approval email" connector requires a REST-enabled Exchange mailbox. The P2-only trial tenant has no Exchange mailboxes (that needs an M365/Exchange license), so the connector returns MailboxNotEnabledForRESTAPI. Rather than buy licensing, the gate is demonstrated mechanically with a Condition, and the email/Teams approval is documented as the integration point a licensed tenant plugs into that same condition.
 
@@ -130,7 +132,7 @@ Create the Logic App (Consumption plan), enable its system-assigned managed iden
 Granting Graph application permissions to a managed identity has no portal UI. It is done via Graph PowerShell app-role assignments.
 
 ![Both Graph permissions granted to the Logic App identity](../screenshots/110-graph-permissions-granted.png)
-*User.ReadWrite.All and Directory.ReadWrite.All assigned to the managed identity. Exactly what the workflow needs to disable a user and revoke sessions, nothing broader.*
+*User.ReadWrite.All and Directory.ReadWrite.All assigned to the managed identity for the lab workflow. Directory.ReadWrite.All is broad and remains a production-hardening review item.*
 
 ### Block 3: Risk-response workflow
 
@@ -141,15 +143,15 @@ Tested against a controlled test account by temporarily pointing the query at a 
 ![Workflow runs history](../screenshots/111-workflow-runs-history.png)
 *Run history showing a successful execution. The workflow queried, looped, and acted end to end.*
 
-### Block 4: Human approval gate
+### Block 4: Condition-gate prototype
 
 Insert a Condition node before the disable, moving disable and revoke into the True branch. Only when the condition is satisfied do the containment actions fire. This separates detection from action, the SOX-defensible control.
 
-The Outlook approval connector was attempted first but returned MailboxNotEnabledForRESTAPI, the P2-only tenant has no Exchange mailbox. The gate was built with a built-in Condition instead (AD-013).
+The Outlook approval connector was attempted first but returned MailboxNotEnabledForRESTAPI, the P2-only tenant has no Exchange mailbox. The decision-point structure was therefore validated with a built-in Condition instead (AD-020). This proves branching and action separation, not a live human approval response.
 
 This block surfaced the sprint's hardest bug. The condition kept skipping the disable even though the True branch was highlighted. The root cause was a type mismatch: the condition compared the boolean `accountEnabled` against the string `"True"` (quoted). A string never equals a boolean, so the condition always failed and the disable never ran. Changing `"True"` to `true` (unquoted boolean) fixed it immediately.
 
-![Approval gate working: account disabled after gated run](../screenshots/112-approval-gate-disabled.png)
+![Condition gate working: account disabled after gated run](../screenshots/112-approval-gate-disabled.png)
 *AccountEnabled False after the gated run. The condition evaluated true, the True branch fired, and the account was disabled. The full gated chain works.*
 
 ### Block 5: Scheduled hygiene runbook
@@ -181,9 +183,9 @@ Publish the runbook, then attach a weekly schedule.
 | Compromised account used before manual response | Event-driven disable + session revocation in seconds |
 | Stolen token replayed after account disabled | revokeSignInSessions kills active tokens immediately |
 | Dormant account revived and used quietly | Weekly hygiene report surfaces never-used accounts |
-| Automation itself triggered as a DoS weapon | Human approval gate; no disable without a decision point |
+| Automation itself triggered as a DoS weapon | Condition gate demonstrated; production human approval integration deferred |
 | Stored secret in a workflow harvested | Managed identity, no secret to steal |
-| Over-permissioned automation identity abused | Least privilege differentiated by function (read vs write) |
+| Over-permissioned automation identity abused | Permissions differentiated by function (read vs write), with production hardening still required |
 
 **Real-world example.** The joiner/leaver symmetry is the core of enterprise lifecycle management. Setting one attribute (department) cascades into group membership and, through group-based licensing, access. Clearing or transitioning that attribute revokes it. Automating both directions removes the manual gap where an offboarded employee keeps access because someone forgot to remove a group.
 
@@ -197,7 +199,7 @@ Publish the runbook, then attach a weekly schedule.
 | Logic App uses managed identity | Identity On, principal ID generated | 109 |
 | Least-privilege Graph grants (Logic App) | Two app-role assignments returned | 110 |
 | Workflow disables risky user | AccountEnabled False after run | 112 |
-| Approval gate branches correctly | True branch fired only when condition met | 112 |
+| Condition gate branches correctly | True branch fired only when condition met | 112 |
 | Runbook reports dormant accounts | 17 of 27 flagged, all never signed in | 115 |
 | Runbook scheduled weekly | weekly-hygiene-scan linked | 116 |
 | Read-only grants (runbook) | Two read-only app-role assignments | 114 |
@@ -208,7 +210,7 @@ The risk-response workflow consumes the same Identity Protection signal that fee
 
 ## Lessons Learned
 
-- **Graph SDK module versions must match.** Mixing 2.38 and 2.39 sub-modules caused repeated "assembly already loaded" and "cmdlet not recognized" errors. The fix was pinning every sub-module to one version (2.39). This cost real time and is the single most common Graph SDK headache. The finished scripts include an explicit module-import header to prevent it.
+- **Graph SDK module versions must match.** Mixing 2.38 and 2.39 sub-modules caused repeated "assembly already loaded" and "cmdlet not recognized" errors. The session-generated scripts were updated with an explicit module-import header, but those Sprint 8 source files are not currently published in this repository.
 - **Dynamic-group membership is attribute-driven, both ways.** You cannot remove a user from a dynamic group directly. Change the source attribute and let the rule re-evaluate. And do not null the attribute; transition it to a defined offboarding state for a clean audit trail.
 - **Entra admin roles do not grant Azure resource permissions.** Creating the Logic App's resource group required an Azure RBAC role activated via PIM. Entra and Azure RBAC are separate permission systems.
 - **Resource providers must be registered per subscription.** Creating the Automation Account required registering Microsoft.Automation first, a subscription-scope action distinct from resource-group RBAC.
@@ -220,12 +222,12 @@ The risk-response workflow consumes the same Identity Protection signal that fee
 ## Enterprise Best Practices
 
 - Use managed identities for all automation. Never store secrets in workflows.
-- Apply least privilege to automation identities, differentiated by function. A reporter gets read-only.
-- Gate destructive automation behind a human decision point. Automation that can disable accounts must not run unchecked.
+- Differentiate automation permissions by function. A reporter should be read-only, and broad write scopes should be reviewed before production.
+- Gate destructive automation behind a real human approval response in production. The lab's Condition proves branching, not human authorization.
 - Pin Graph SDK module versions in scripts to avoid version-clash failures.
 - Offboard by transitioning attributes to defined states, not by nulling them, for audit clarity.
 - Run access hygiene on a schedule and keep the output as audit evidence.
 
 ## Conclusion
 
-Sprint 8 builds a complete identity automation stack: lifecycle scripts that provision and deprovision through attribute-driven Graph calls, an event-driven Logic App that contains risky accounts in seconds behind a human approval gate, and a scheduled runbook that surfaces dormant accounts for audit. Every automated identity runs on a managed identity with least-privilege permissions and no stored secrets. The sprint fought back hard, module version clashes, RBAC scope walls, a resource-provider registration, a mailbox licensing boundary, and a string-versus-boolean condition bug, and each obstacle became a documented lesson. Meridian now has both halves of operational identity automation: containment for speed and governance for cadence.
+Sprint 8 demonstrates an identity automation stack: lifecycle scripts exercised through attribute-driven Graph calls, a managed-identity Logic App that disabled a controlled test account behind a condition-gated decision point, and a scheduled runbook that surfaced dormant accounts for audit. A live human approval connector remains a documented production extension, and the automation source files still need to be published for full reproducibility. The sprint fought through module version clashes, RBAC scope walls, resource-provider registration, a mailbox licensing boundary, and a string-versus-boolean condition bug, and each obstacle became a documented lesson.

@@ -1,6 +1,10 @@
+# Sprint 9: Governance, Audit, and Compliance
+
 ## Introduction
 
 Sprints 1 through 8 built the identity controls for Meridian Financial Group. Sprint 9 proves the two things a regulated firm is actually judged on: that the controls produce audit evidence on demand, and that every control maps to a compliance obligation someone can name. This document covers the framework mapping and a real production incident that occurred during the sprint, an access-review-driven Global Administrator lockout, which is documented in full because it is the most instructive artifact the project produced.
+
+The planned durable log-retention build was not completed live because the Azure subscription was disabled and read-only. It was delivered as a design under AD-021. The tenant lockout recovery and corrective break-glass rebuild remain open under AD-022.
 
 This is the identity-governance companion to the Azure Zero Trust SOC Lab. Where the SOC lab centered on detection and response, this sprint centers on audit readiness and compliance mapping for the identity control plane.
 
@@ -69,7 +73,7 @@ Deep AI-governance treatment (model risk, data governance, AI lifecycle) is out 
 
 During the Sprint 9 privileged-role recertification block, a Global Administrator access review with auto-apply enabled removed the Global Administrator role from every privileged account in the tenant, including both emergency-access (break-glass) accounts and the primary admin. The result was a full tenant lockout requiring Microsoft tenant recovery. The root cause was a break-glass configuration that did not meet the definition of true break-glass, combined with an access review scoped and configured in a way that swept those accounts in.
 
-This incident is documented in full because it is a genuine, first-hand version of a failure mode most identity engineers only read about, and because the corrective decision (AD-015) materially strengthens the tenant's design.
+This incident is documented in full because it is a genuine, first-hand version of a failure mode most identity engineers only read about, and because the corrective decision (AD-022) materially strengthens the tenant's design.
 
 ### Timeline
 
@@ -101,7 +105,7 @@ The incident was not all failure. Several controls behaved exactly as designed a
 
 Administrative access was lost. No built configuration was lost: users, groups, Conditional Access policies, PIM configuration, the Logic App, and the automation runbook all remained intact in the tenant. The impact was loss of control, not loss of work, and it is recoverable through Microsoft tenant recovery.
 
-### Architecture Decision AD-015
+### Architecture Decision AD-022
 
 **Decision:** Break-glass accounts must be configured as true break-glass: permanent active Global Administrator, and explicitly excluded from every access review and every Conditional Access policy. Access reviews of privileged roles must use a named reviewer who is never a subject of the same review, and auto-apply with remove-on-non-response must never be armed on a review whose reviewer routing cannot resolve to a valid, non-subject reviewer.
 
@@ -124,4 +128,4 @@ Administrative access was lost. No built configuration was lost: users, groups, 
 
 ## Conclusion
 
-Sprint 9 delivered the audit-evidence and compliance-mapping layer that makes the earlier identity build legible to a regulator, and it produced a real incident that hardened the design. The framework matrix ties every control to a named obligation across SOX, GLBA, ISO 27001, and ISO 42001. The lockout incident, rather than being hidden, is documented as the project's strongest demonstration of production judgment: a genuine privileged-access failure, correctly diagnosed, honestly recorded, and resolved with a concrete architecture decision that prevents recurrence.
+Sprint 9 delivered the framework mapping and documented audit-evidence workflow that make the earlier identity build legible to a regulator. Durable log retention remained design-only under AD-021. The lockout incident, rather than being hidden, is documented as a strong demonstration of production judgment: a genuine privileged-access failure, correctly diagnosed and recorded, with corrective architecture defined in AD-022. Tenant recovery and the corrective rebuild remain open and are not represented as completed.

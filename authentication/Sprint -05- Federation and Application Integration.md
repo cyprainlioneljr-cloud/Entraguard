@@ -1,3 +1,5 @@
+# Sprint 5: Federation and Application Integration
+
 ## Introduction
 
 Meridian's workforce needs SaaS applications, and how those apps trust Meridian's identity provider is a security decision, not an IT convenience. This sprint stands up the three federation and provisioning patterns every IAM engineer is expected to know: SAML single sign-on, OpenID Connect with OAuth 2.0, and SCIM automated provisioning.

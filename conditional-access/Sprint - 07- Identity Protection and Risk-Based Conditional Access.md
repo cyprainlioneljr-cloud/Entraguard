@@ -1,3 +1,5 @@
+# Sprint 7: Identity Protection and Risk-Based Conditional Access
+
 ## Introduction
 
 Identity Protection is the risk engine of Microsoft Entra ID. It uses machine learning trained on Microsoft's signal at scale to score whether a sign-in or an account is compromised, then hands that score to Conditional Access to enforce a response. This sprint wires that engine into Meridian Financial Group's access control plane and proves it end to end with a live risk detection.
@@ -86,7 +88,7 @@ The design separates detection from enforcement, which is the whole point of the
 
 **Consequence.** Risk enforcement lives alongside every other CA policy in the `/conditional-access/` topic folder, under the same report-only-first convention. The MFA registration policy stays in Identity Protection because it is not a risk-enforcement policy and is not being retired.
 
-### Architecture Decision AD-009: adm-provost included in risk policies
+### Design Decision: adm-provost included in risk policies
 
 **Decision.** Exclude only the two break-glass accounts from the risk-based CA policies. Do not exclude the daily admin account `adm-provost`.
 
@@ -94,7 +96,7 @@ The design separates detection from enforcement, which is the whole point of the
 
 **Consequence.** `adm-provost` is subject to CA20 and CA21 like any other user. The initial CA20 build carried a three-account exclusion by mistake; it was corrected to two (break-glass only) before the sprint proceeded.
 
-### Architecture Decision AD-010: Workload identity enforcement deferred on licensing
+### Design Decision: Workload identity enforcement deferred on licensing
 
 **Decision.** Demonstrate workload identity risk detection on P2, but do not build the service-principal-scoped CA policy (CA22). Document it as a licensing boundary.
 
@@ -182,8 +184,7 @@ When an account's aggregate risk scores High (leaked credentials, threat intel),
 ![CA21 configured, report-only](../screenshots/100-ca21-user-risk-config.png)
 *CA21 in report-only. User risk High, require password change, 2 users excluded.*
 
-![CA21 grant control](../screenshots/101-ca21-grant-password-change.png)
-*CA21 grant control detail: require password change.*
+The policy configuration records Require password change as its grant control. A separate screenshot numbered 101 was referenced in an earlier draft but was not published, so that broken image reference has been removed.
 
 **Sign-in risk versus user risk.** CA20 fires on a single risky sign-in and requires MFA to prove it is you. CA21 fires on a risky account and forces a password change to kill the compromised credential. Different signal, different response.
 
@@ -226,7 +227,7 @@ Service principals are the identities most organizations govern worst, and incre
 **Part B, enforcement, blocked by licensing.** The plan was CA22, a policy blocking a risky service principal (the SAML Toolkit SP from Sprint 5). Creating a service-principal-scoped CA policy requires Workload Identities Premium. The self-service trial for that SKU was not available in this tenant; the Licenses activation blade offered only Entra Suite, ID Governance, and P2.
 
 ![Licenses activation blade without Workload ID](../screenshots/105-workload-id-trial-not-available.png)
-*The trial activation blade. Entra Suite, ID Governance, and P2 are offered. Workload ID Premium is not self-service here, confirming the boundary. CA22 is documented rather than built (AD-010).*
+*The trial activation blade. Entra Suite, ID Governance, and P2 are offered. Workload ID Premium is not self-service here, confirming the boundary. CA22 is documented rather than built.*
 
 ## Attacker and Defender Framing
 
@@ -255,7 +256,7 @@ Service principals are the identities most organizations govern worst, and incre
 
 ## Cross-Reference to the Azure Zero Trust SOC Lab
 
-This sprint stops at the Entra boundary by design. Detection and enforcement live here. The detection-and-response side lives in the SOC lab, and the two connect cleanly:
+This sprint stops at the Entra boundary by design. Detection and report-only policy evaluation live here; enforcement was staged but is not evidenced as enabled. The detection-and-response side lives in the SOC lab, and the two connect cleanly:
 
 - Entra risk detections and sign-in logs are the identity signals that feed Sentinel UEBA. UEBA baselines normal behavior per user and surfaces anomalies that enrich the risk picture.
 - New Sentinel work should target the Microsoft Defender portal. Microsoft is consolidating Sentinel there, and the Azure-portal experience is on a retirement path (March 31, 2027).
@@ -282,4 +283,4 @@ Keeping EntraGuard's center of gravity on identity and pointing to the SOC lab f
 
 ## Conclusion
 
-Sprint 7 turns Identity Protection into an active control, not a dashboard. The risk engine scores users and sign-ins, and Conditional Access enforces a proportionate response, built the current supported way with the legacy path deliberately avoided. A live Tor sign-in proved the pipeline end to end and drove a real tuning decision, widening CA20 to catch the Medium-risk anonymized sign-in it initially missed. Workload identity risk was demonstrated to the exact point P2 licensing allows, with the enforcement gap documented honestly. Meridian now contains compromised user identities automatically, lets legitimate users clear false positives themselves, and has a clear, costed path to extend that coverage to non-human identities. The identity control plane is now not just governed but defended.
+Sprint 7 moved Identity Protection beyond a dashboard by connecting real risk detections to report-only Conditional Access evaluation. A live Tor sign-in proved the detection and evaluation pipeline and drove a real tuning decision, widening CA20 to include the Medium-risk anonymized sign-in it initially missed. The policies remained in report-only, so automatic containment and self-service remediation should be described as designed behavior pending enforcement, not as live controls. Workload identity risk was demonstrated to the exact point P2 licensing allowed, with the enforcement gap documented honestly.

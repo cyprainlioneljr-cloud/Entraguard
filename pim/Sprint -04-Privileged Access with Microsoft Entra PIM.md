@@ -1,4 +1,6 @@
 
+# Sprint 4: Privileged Access with Microsoft Entra PIM
+
 ## Introduction
 
 Standing administrative access is the single largest identity risk in a cloud tenant. A Global Administrator account that holds its role permanently is a target that pays off around the clock. Steal its session token at 2am and the attacker owns the tenant instantly, no further gate to clear.

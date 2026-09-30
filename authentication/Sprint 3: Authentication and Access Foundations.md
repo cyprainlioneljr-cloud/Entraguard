@@ -1,4 +1,6 @@
 
+# Sprint 3: Authentication and Access Foundations
+
 ## Introduction
 
 This sprint replaces the tenant's blunt, one-size-fits-all protection with a Conditional Access persona architecture and phishing-resistant authentication. It moves Meridian from Security Defaults toward a designed access model where protection scales with privilege.
@@ -199,4 +201,3 @@ This is the sprint's final step, staged and not yet run.
 5. Flip policies from report-only to On in a deliberate order, verifying access after each.
 6. Confirm the break-glass account is unaffected.
 7. Capture post-cutover verdicts and screenshots.
-

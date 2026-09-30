@@ -106,7 +106,6 @@
 | `98-mfa-registration-policy-on.png` | 7 | MFA registration policy enabled, break-glass excluded |
 | `99-ca20-signin-risk-config.png` | 7 | CA20 report-only, sign-in risk Medium+High, require MFA, 2 excluded |
 | `100-ca21-user-risk-config.png` | 7 | CA21 report-only, user risk High, require password change |
-| `101-ca21-grant-password-change.png` | 7 | CA21 grant control detail |
 | `102-risky-signin-anonymous-ip.png` | 7 | Live Anonymous IP detection, test user, Stockholm and Amsterdam Tor nodes |
 | `103-risky-signin-report-only-result.png` | 7 | Sign-in detail Medium; report-only shows CA20 not applied at High |
 | `104-risky-workload-identities.png` | 7 | Risky workload identities page, clean tenant |
@@ -117,13 +116,11 @@
 | `109-managed-identity-on.png` | 8 | Logic App system-assigned managed identity On, principal ID |
 | `110-graph-permissions-granted.png` | 8 | User.ReadWrite.All + Directory.ReadWrite.All granted to Logic App identity |
 | `111-workflow-runs-history.png` | 8 | Risk-response workflow run history, succeeded |
-| `112-approval-gate-disabled.png` | 8 | AccountEnabled False after gated run (approval gate working) |
+| `112-approval-gate-disabled.png` | 8 | AccountEnabled False after a successful condition-gated run; not a live human approval response |
 | `113-automation-account-created.png` | 8 | Automation Account aa-entraguard-hygiene deployed |
 | `114-automation-graph-permissions.png` | 8 | User.Read.All + AuditLog.Read.All (read-only) granted to runbook identity |
 | `115-hygiene-report-output.png` | 8 | Runbook output: 17 dormant of 27 enabled members |
 | `116-runbook-schedule.png` | 8 | weekly-hygiene-scan schedule linked to runbook |
-
-
 
 
 
